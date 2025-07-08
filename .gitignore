@@ -1,0 +1,11 @@
+# /.streamlit
+/.venv
+/dataset
+.env
+.vscode
+/demos/Nutritional_Lookup.py
+/pages/__pycache__
+/utils/__pycache__
+/demos
+/macros
+/models
