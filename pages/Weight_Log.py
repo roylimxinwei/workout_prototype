@@ -33,8 +33,8 @@ def weight_log_main(verbose):
     # to make the week = latest week on first run
     if data:
         df = pd.DataFrame(data).drop(columns=["user_id", "created_at"])
-    if not df.empty and "week" in df.columns:
-        st.session_state.weight_latest_week = int(df["week"].max())
+        if not df.empty and "week" in df.columns:
+            st.session_state.weight_latest_week = int(df["week"].max())
 
     # Check if weight has been logged today
     if not is_weight_logged_today():
