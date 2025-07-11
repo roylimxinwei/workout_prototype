@@ -27,17 +27,25 @@ def is_weight_logged_today():
 
 @ require_login
 def weight_log_main(verbose):
+    resp = select_rows("weight")
+    data = resp.data or []
+
+    # to make the week = latest week on first run
+    if data:
+        df = pd.DataFrame(data).drop(columns=["user_id", "created_at"])
+    if not df.empty and "week" in df.columns:
+        st.session_state.weight_latest_week = int(df["week"].max())
+
+    # Check if weight has been logged today
     if not is_weight_logged_today():
         st.warning("Log your weight to keep your streak going!", icon="💪")
         weight_log_form("daily_weight_form", st.session_state.weight_latest_week)
     else:
         st.info("You have logged your weight for today. Keep it up!", icon="🔥")
         
-    is_weight_logged_today()
-    resp = select_rows("weight")
-    data = resp.data or []
+    # is_weight_logged_today()
+    
     if data:
-        df = pd.DataFrame(data).drop(columns=["user_id", "created_at"])
         if verbose:
             st.write(df)
         

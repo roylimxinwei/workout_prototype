@@ -13,6 +13,7 @@ pages = {
     ],
     "Fitness": [
         st.Page("pages/Weight_Log.py", title="Weight Log", icon="📉"),
+        st.Page("pages/Workout_Tracker.py", title="Workout Tracker", icon="🏋️"),
     ],
     "Well Being":[
         st.Page('pages/Ask_AI.py', title="Chat Bot", icon="🤖")],

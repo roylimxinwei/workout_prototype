@@ -2,6 +2,7 @@ import streamlit as st
 from utils.db_utils import insert_row, update_row, delete_row
 import time
 from datetime import datetime
+import pandas as pd
 
 ### main.py
 def sign_up_form():
@@ -203,3 +204,63 @@ def update_macros_diary_form(diary_id, date, protein, carbs, fats, calories):
         st.warning(f"Deleting diary for {date}...")
         time.sleep(1)
         st.rerun()
+
+### workout_tracker.py
+def create_workout_routine_form(exercise_dfs, expanded):
+    with st.expander("New Workout Routine", expanded=expanded):
+        col1, col2 = st.columns([7, 3])
+        with col1:
+            routine_name = st.text_input(
+                "Workout Name",
+                placeholder="Push Day",
+                key=f"routine_name_{st.session_state.routine_form_key}"
+            )
+        with col2:
+            routine_date = st.date_input("Workout Date", value=datetime.today(), key="workout_date")
+        st.divider()
+        for i, df in enumerate(exercise_dfs):
+            name = st.text_input(f"Exercise {i+1} Name", key=f"exercise_{i}", placeholder="Exercise Name")
+            exercise_dfs[i] = st.data_editor(
+                pd.DataFrame(columns=["Set", "Weight", "Reps"]),
+                num_rows="dynamic",
+                use_container_width=True,
+                key=f"exercise_df_{i}"
+            )
+
+        st.divider()
+        # Use a unique key for each delete button
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Add Exercise", use_container_width=True):
+                exercise_dfs.append(pd.DataFrame(columns=["Weight", "Set", "Reps"]))
+                st.rerun()
+        with col2:
+            if st.button("Delete Last Exercise", use_container_width=True):
+                exercise_dfs.pop()
+                st.rerun()
+        workout_completed = st.button("Workout Complete", use_container_width=True)
+        if workout_completed:
+            routine_date = routine_date.strftime("%Y-%m-%d")
+            # exercises_serializable = [df.to_dict(orient="records") for df in exercise_dfs]
+            exercises_serializable = []
+            for i, df in enumerate(exercise_dfs):
+                # pull the name back out of session_state
+                name = st.session_state.get(f"exercise_{i}", "").strip()
+                exercises_serializable.append({
+                    "name": name,
+                    "sets": df.to_dict(orient="records")
+                })
+            insert_row("workouts", {"routine_name": routine_name, "routine_date": routine_date, "exercises": exercises_serializable})
+            st.success("Workout logged successfully!")
+            time.sleep(1)
+            reset_workout_routine_form()
+            st.rerun()
+        
+def reset_workout_routine_form():
+    st.session_state.exercise_dfs = [pd.DataFrame(columns=["Set", "Weight", "Reps"])]
+    # Remove exercise name fields if you use them
+    for key in list(st.session_state.keys()):
+        if key.startswith("exercise_"):
+            del st.session_state[key]
+    # Optionally reset other fields (do NOT reset workout_date directly if it's bound to a widget)
+    st.session_state.routine_form_key += 1
