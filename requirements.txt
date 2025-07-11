@@ -6,9 +6,6 @@ scikit-learn==1.6.1
 numpy==2.2.6
 python-dotenv>=0.21.0,<2.0
 supabase==2.15.3
-beautifulsoup4==4.13.4 
-selenium==4.33.2
-webdriver-manager==4.0.2
 opencv-contrib-python==4.11.0.86
 openai
 langchain
