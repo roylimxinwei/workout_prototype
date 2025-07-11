@@ -21,13 +21,15 @@ def macro_diary_main(verbose=False):
         if st.button("⬅️", key="prev"):
             st.session_state.carousel_date -= timedelta(days=1)
             st.rerun()
+
+    with col2:
+        date = st.session_state.carousel_date
+        date = st.date_input("Macros for", value=date, key="macro_diary_date", label_visibility="collapsed")
+
     with col3:
         if st.button("➡️", key="next"):
             st.session_state.carousel_date += timedelta(days=1)
             st.rerun()
-    with col2:
-        date = st.session_state.carousel_date
-        date = st.date_input("Macros for", value=date, key="macro_diary_date")
 
     resp = select_rows("macro_diary", {'date': date.strftime("%Y-%m-%d")})
     data = resp.data or []

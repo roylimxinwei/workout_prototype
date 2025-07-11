@@ -3,6 +3,7 @@ import os
 import sys
 from utils.forms import sign_up_form, login_form
 from utils.auth_utils import supabase, init_session, sign_in, sign_up, sign_out
+import time
 
 pages = {
     "Nutrition": [
@@ -25,14 +26,16 @@ init_session()
 
 # 2) sign up / login 
 def auth_screen():
-    st.title("Log-In/ Sign-Up to get started")
+    st.title("Log-In/ Sign-Up")
     option = st.selectbox("Select an option", ["Log In", "Sign Up"])
+    st.info("For slightly better experience, use a desktop browser.", icon="ℹ️")
     if option == "Sign Up":
         username, email, password = sign_up_form()
         if username and email and password:
             res = sign_up(email, password, username)
             if getattr(res, "user", None):
-                st.success("✅ Sign up successful – now please log in.")
+                st.success("✅ Sign up successful – Check your email for verification and log in again!")
+                time.sleep(5)
                 st.rerun()
     else:
         email, password = login_form()
